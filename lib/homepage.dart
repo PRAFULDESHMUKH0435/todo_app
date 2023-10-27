@@ -1,56 +1,109 @@
 import 'package:flutter/material.dart';
-class HomePage extends StatelessWidget {
+import 'package:todo_app/todolisttile.dart';
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+
+  final _controller = TextEditingController();
+   List tasklist =[
+    ['Make App',false],
+    ['Create Screen',false],
+  ];
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(onPressed: (){
-                showsnackbar(context);
-                // opendialog(context);
-              }, child: Text('Click Me'))
-            ],
-          ),
+    return WillPopScope(
+      onWillPop: ()=>_OnExit(context),
+      child: Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+          title: Text('To-Do'),
+          centerTitle: true,
+          leading: Icon(Icons.menu_book_rounded,size: 50,color: Colors.black,),
+        ),
+
+        body: ListView.builder(
+            itemCount: tasklist.length,
+            itemBuilder: (context,index){
+              return ToDoListTile(
+                  tasklist[index][0],
+                  tasklist[index][1]);
+            }),
+
+
+
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add,size: 30),
+          onPressed: (){
+            showDialog(
+                context: context,
+                builder: (context){
+                   return AlertDialog(
+                     backgroundColor: Colors.yellow[200],
+                     content: Container(
+                       height: 200,
+                       width: 200,
+                       child: Column(
+                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                         children: [
+                           TextField(
+                             controller: _controller,
+                             decoration: InputDecoration(
+                               hintText: 'Enter Task',
+                               border: OutlineInputBorder()
+                             ),
+                           ),
+                           Row(
+                             mainAxisAlignment: MainAxisAlignment.end,
+                             children: [
+                               OutlinedButton(onPressed: () {
+                                 if(_controller.text.isEmpty){
+                                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Task Field Should Not Be Empty')));
+                                   Navigator.pop(context);
+                                 }else{
+                                   setState(() {
+                                     tasklist.add([_controller.text,false]);
+                                     _controller.clear();
+                                     print(tasklist.length);
+                                     Navigator.pop(context);
+                                   });
+                                 }
+
+                               }, child: Text('Add',style: TextStyle(color: Colors.black),)),
+                               SizedBox(width: 10,),
+                               OutlinedButton(onPressed: ()=>Navigator.pop(context), child: Text('Cancel',style: TextStyle(color: Colors.black),)),
+                             ],
+                           )
+                         ],
+                       ),
+                     ),
+                   );
+                });
+          },
         ),
       ),
     );
   }
+}
 
-
-  ScaffoldFeatureController<SnackBar, SnackBarClosedReason> showsnackbar(BuildContext context){
-      final snackbar = SnackBar(content: Row(
-      children: [
-        Icon(Icons.person,color: Colors.white,),
-        SizedBox(width: 20,),
-        Text('This Is SnackBar')
-      ],
-    ),action: SnackBarAction(label: 'Undo',
-          textColor: Colors.white, onPressed: (){}),duration: Duration(seconds: 5),
-           elevation: 15.0,
-           backgroundColor: Colors.green,);
-      return ScaffoldMessenger.of(context).showSnackBar(snackbar);
-  }
-
-  Future opendialog(BuildContext context){
-    return showModalBottomSheet(context: context, builder: (context){
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ListTile(
-            title: Text('MyAccount'),
-            leading: Icon(Icons.person),
-          ),
-          ListTile(
-            title: Text('My Profile'),
-            leading: Icon(Icons.wallet),
-          ),
-        ],
-      );
-    });
-  }
+Future<bool>_OnExit(BuildContext context) async{
+  bool? exitapp = await showDialog(
+      context: context,
+      builder: (context){
+        return AlertDialog(
+          backgroundColor: Colors.yellow[200],
+          title: Text('Exit ?'),
+          content: Text('Are You Sure You Want To Exit ?'),
+          actions: [
+            OutlinedButton(onPressed: ()=>Navigator.of(context).pop(true), child: Text('Yes',style: TextStyle(color: Colors.black),)),
+            OutlinedButton(onPressed: ()=>Navigator.of(context).pop(false), child: Text('No',style: TextStyle(color: Colors.black),)),
+          ],
+        );
+      });
+  return exitapp?? false;
 }
