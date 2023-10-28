@@ -31,11 +31,9 @@ class _HomePageState extends State<HomePage> {
             itemCount: tasklist.length,
             itemBuilder: (context,index){
               return ToDoListTile(
-                  tasklist[index][0],
-                  tasklist[index][1]);
+                taskname: tasklist[index][0],
+                iscompleted: tasklist[index][1],);
             }),
-
-
 
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add,size: 30),
@@ -73,7 +71,6 @@ class _HomePageState extends State<HomePage> {
                                      Navigator.pop(context);
                                    });
                                  }
-
                                }, child: Text('Add',style: TextStyle(color: Colors.black),)),
                                SizedBox(width: 10,),
                                OutlinedButton(onPressed: ()=>Navigator.pop(context), child: Text('Cancel',style: TextStyle(color: Colors.black),)),

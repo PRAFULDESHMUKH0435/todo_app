@@ -1,18 +1,9 @@
 import 'package:flutter/material.dart';
-
 class ToDoListTile extends StatefulWidget {
 
-  late final  String? task;
-  late final  bool iscompleted;
-  // ToDoListTile({
-  //   required this.iscompleted,
-  //   required this.task,
-  // });
-
-  ToDoListTile(@required String t,@required bool isc){
-    this.task=t;
-    this.iscompleted=isc;
-  }
+  final String taskname;
+  late  bool iscompleted;
+  ToDoListTile({required this.taskname, required this.iscompleted});
 
 
   @override
@@ -20,7 +11,6 @@ class ToDoListTile extends StatefulWidget {
 }
 
 class _ToDoListTileState extends State<ToDoListTile> {
-  bool myval = false;
 
   Widget build(BuildContext context) {
     return Container(
@@ -34,17 +24,17 @@ class _ToDoListTileState extends State<ToDoListTile> {
         children: [
           Checkbox(
             activeColor: Colors.black,
-              value: myval,
+              value: widget.iscompleted,
               onChanged: (val){
                 setState(() {
-                  myval=!myval;
+                  widget.iscompleted=!widget.iscompleted;
                 });
               }),
           SizedBox(
             width: 35,
           ),
           Text(
-            ' ${widget.task}',
+            widget.taskname,
             style: TextStyle(
                 fontSize: 20,
                 decoration: widget.iscompleted
